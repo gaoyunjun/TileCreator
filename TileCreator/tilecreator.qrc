@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/TileCreator">
+        <file>Resources/images/TileCreator.png</file>
+    </qresource>
+</RCC>
