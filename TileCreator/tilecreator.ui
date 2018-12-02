@@ -29,18 +29,23 @@
           <string>高程切片</string>
          </property>
         </item>
+        <item>
+         <property name="text">
+          <string>矢量切片</string>
+         </property>
+        </item>
        </widget>
       </item>
       <item>
        <widget class="QComboBox" name="cmbTileflag">
         <item>
          <property name="text">
-          <string>单张影像</string>
+          <string>单个文件</string>
          </property>
         </item>
         <item>
          <property name="text">
-          <string>多张影像</string>
+          <string>多个文件</string>
          </property>
         </item>
        </widget>
@@ -52,7 +57,7 @@
       <item>
        <widget class="QPushButton" name="ptnres">
         <property name="text">
-         <string>影像原始路径：</string>
+         <string>原始数据路径：</string>
         </property>
        </widget>
       </item>
@@ -115,6 +120,11 @@
         <item>
          <property name="text">
           <string>tif</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>json</string>
          </property>
         </item>
        </widget>

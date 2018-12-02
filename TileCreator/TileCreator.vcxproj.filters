@@ -41,31 +41,23 @@
     <ClCompile Include="tilecreator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_tilecreator.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_tilecreator.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\qrc_tilecreator.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
+    
+    
+    
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="tilecreator.h">
+    <QtMoc Include="tilecreator.h">
       <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="tilecreator.ui">
+    </QtMoc>
+    <QtUic Include="tilecreator.ui">
       <Filter>Form Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="tilecreator.qrc">
+    </QtUic>
+    <QtRcc Include="tilecreator.qrc">
       <Filter>Resource Files</Filter>
-    </CustomBuild>
+    </QtRcc>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="GeneratedFiles\ui_tilecreator.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
+    
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>

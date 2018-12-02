@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Resource object code
 **
-** Created by: The Resource Compiler for Qt version 5.4.1
+** Created by: The Resource Compiler for Qt version 5.6.3
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
@@ -6639,16 +6639,16 @@ bool qUnregisterResourceData(int, const unsigned char *, const unsigned char *, 
 }
 #endif
 
-int QT_RCC_MANGLE_NAMESPACE(qInitResources_tilecreator)();
-int QT_RCC_MANGLE_NAMESPACE(qInitResources_tilecreator)()
+int QT_RCC_MANGLE_NAMESPACE(qInitResources_TileCreator)();
+int QT_RCC_MANGLE_NAMESPACE(qInitResources_TileCreator)()
 {
     QT_RCC_PREPEND_NAMESPACE(qRegisterResourceData)
         (0x01, qt_resource_struct, qt_resource_name, qt_resource_data);
     return 1;
 }
 
-int QT_RCC_MANGLE_NAMESPACE(qCleanupResources_tilecreator)();
-int QT_RCC_MANGLE_NAMESPACE(qCleanupResources_tilecreator)()
+int QT_RCC_MANGLE_NAMESPACE(qCleanupResources_TileCreator)();
+int QT_RCC_MANGLE_NAMESPACE(qCleanupResources_TileCreator)()
 {
     QT_RCC_PREPEND_NAMESPACE(qUnregisterResourceData)
        (0x01, qt_resource_struct, qt_resource_name, qt_resource_data);
@@ -6657,7 +6657,7 @@ int QT_RCC_MANGLE_NAMESPACE(qCleanupResources_tilecreator)()
 
 namespace {
    struct initializer {
-       initializer() { QT_RCC_MANGLE_NAMESPACE(qInitResources_tilecreator)(); }
-       ~initializer() { QT_RCC_MANGLE_NAMESPACE(qCleanupResources_tilecreator)(); }
+       initializer() { QT_RCC_MANGLE_NAMESPACE(qInitResources_TileCreator)(); }
+       ~initializer() { QT_RCC_MANGLE_NAMESPACE(qCleanupResources_TileCreator)(); }
    } dummy;
 }

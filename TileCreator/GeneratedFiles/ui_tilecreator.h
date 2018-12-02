@@ -1,7 +1,7 @@
 /********************************************************************************
-** Form generated from reading UI file 'tilecreator.ui'
+** Form generated from reading UI file 'TileCreator.ui'
 **
-** Created by: Qt User Interface Compiler version 5.4.1
+** Created by: Qt User Interface Compiler version 5.6.3
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -209,29 +209,31 @@ public:
 
     void retranslateUi(QMainWindow *TileCreatorClass)
     {
-        TileCreatorClass->setWindowTitle(QApplication::translate("TileCreatorClass", "TileCreator", 0));
+        TileCreatorClass->setWindowTitle(QApplication::translate("TileCreatorClass", "TileCreator", Q_NULLPTR));
         cmbTileCreator->clear();
         cmbTileCreator->insertItems(0, QStringList()
-         << QApplication::translate("TileCreatorClass", "\345\275\261\345\203\217\345\210\207\347\211\207", 0)
-         << QApplication::translate("TileCreatorClass", "\351\253\230\347\250\213\345\210\207\347\211\207", 0)
+         << QApplication::translate("TileCreatorClass", "\345\275\261\345\203\217\345\210\207\347\211\207", Q_NULLPTR)
+         << QApplication::translate("TileCreatorClass", "\351\253\230\347\250\213\345\210\207\347\211\207", Q_NULLPTR)
+         << QApplication::translate("TileCreatorClass", "\347\237\242\351\207\217\345\210\207\347\211\207", Q_NULLPTR)
         );
         cmbTileflag->clear();
         cmbTileflag->insertItems(0, QStringList()
-         << QApplication::translate("TileCreatorClass", "\345\215\225\345\274\240\345\275\261\345\203\217", 0)
-         << QApplication::translate("TileCreatorClass", "\345\244\232\345\274\240\345\275\261\345\203\217", 0)
+         << QApplication::translate("TileCreatorClass", "\345\215\225\344\270\252\346\226\207\344\273\266", Q_NULLPTR)
+         << QApplication::translate("TileCreatorClass", "\345\244\232\344\270\252\346\226\207\344\273\266", Q_NULLPTR)
         );
-        ptnres->setText(QApplication::translate("TileCreatorClass", "\345\275\261\345\203\217\345\216\237\345\247\213\350\267\257\345\276\204\357\274\232", 0));
-        label_2->setText(QApplication::translate("TileCreatorClass", "\347\223\246\347\211\207\346\234\200\345\260\217\347\272\247\345\210\253\357\274\232", 0));
-        lineEdit_2->setText(QApplication::translate("TileCreatorClass", "0", 0));
-        label_3->setText(QApplication::translate("TileCreatorClass", "\347\223\246\347\211\207\346\234\200\345\244\247\347\272\247\345\210\253\357\274\232", 0));
-        ptnobj_2->setText(QApplication::translate("TileCreatorClass", "\347\223\246\347\211\207\346\211\251\345\261\225\345\220\215\357\274\232", 0));
+        ptnres->setText(QApplication::translate("TileCreatorClass", "\345\216\237\345\247\213\346\225\260\346\215\256\350\267\257\345\276\204\357\274\232", Q_NULLPTR));
+        label_2->setText(QApplication::translate("TileCreatorClass", "\347\223\246\347\211\207\346\234\200\345\260\217\347\272\247\345\210\253\357\274\232", Q_NULLPTR));
+        lineEdit_2->setText(QApplication::translate("TileCreatorClass", "0", Q_NULLPTR));
+        label_3->setText(QApplication::translate("TileCreatorClass", "\347\223\246\347\211\207\346\234\200\345\244\247\347\272\247\345\210\253\357\274\232", Q_NULLPTR));
+        ptnobj_2->setText(QApplication::translate("TileCreatorClass", "\347\223\246\347\211\207\346\211\251\345\261\225\345\220\215\357\274\232", Q_NULLPTR));
         cmbext->clear();
         cmbext->insertItems(0, QStringList()
-         << QApplication::translate("TileCreatorClass", "png", 0)
-         << QApplication::translate("TileCreatorClass", "tif", 0)
+         << QApplication::translate("TileCreatorClass", "png", Q_NULLPTR)
+         << QApplication::translate("TileCreatorClass", "tif", Q_NULLPTR)
+         << QApplication::translate("TileCreatorClass", "json", Q_NULLPTR)
         );
-        ptnobj->setText(QApplication::translate("TileCreatorClass", "\347\223\246\347\211\207\344\277\235\345\255\230\350\267\257\345\276\204\357\274\232", 0));
-        ptnbegin->setText(QApplication::translate("TileCreatorClass", "\345\274\200\345\247\213", 0));
+        ptnobj->setText(QApplication::translate("TileCreatorClass", "\347\223\246\347\211\207\344\277\235\345\255\230\350\267\257\345\276\204\357\274\232", Q_NULLPTR));
+        ptnbegin->setText(QApplication::translate("TileCreatorClass", "\345\274\200\345\247\213", Q_NULLPTR));
     } // retranslateUi
 
 };

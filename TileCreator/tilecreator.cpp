@@ -24,7 +24,8 @@
 #include <iostream>
 #include <sstream>
 #include <iterator>
-
+#include<QProcess>
+#include <QApplication>
 using namespace osgEarth;
 using namespace osgEarth::Util;
 using namespace osgEarth::Drivers;
@@ -50,7 +51,7 @@ void TileCreator::addSubFolderFileImages(const QString &path, QStringList &list)
 	dir.setFilter(QDir::Files | QDir::NoSymLinks);
 	QFileInfoList list1 = dir.entryInfoList();
 	int filecount = list1.count();
-	if (filecount=0)
+	if (filecount = 0)
 	{
 		return;
 	}
@@ -58,7 +59,7 @@ void TileCreator::addSubFolderFileImages(const QString &path, QStringList &list)
 	{
 		QFileInfo infor = list1.at(i);
 		QString suffix = infor.suffix();
-		if (QString::compare(suffix, QString("tif"), Qt::CaseInsensitive)== 0)
+		if (QString::compare(suffix, QString("tif"), Qt::CaseInsensitive) == 0)
 		{
 			QString absolutefile_path = infor.absoluteFilePath();
 			list.append(absolutefile_path);
@@ -68,9 +69,11 @@ void TileCreator::addSubFolderFileImages(const QString &path, QStringList &list)
 
 void TileCreator::slotopenfile()
 {
-	QString filter("Images (*.png *.tif *.tiff *.jpg)");
+	QString filter("Images (*.png *.tif *.tiff *.jpg) /n Shp(*.shp)");
 	QStringList filters;
-	filters << QString("*.jpeg") << QString("*.jpg") << QString("*.png") << QString("*.tiff") << QString("*.tiff");
+	filters << QString("*.jpeg") << QString("*.jpg") << QString("*.png") << QString("*.tif") << QString("*.tiff") << QString("*.shp");
+	QStringList shpfilters;
+	shpfilters << QString("*.shp");
 	QFileDialog* fd = new QFileDialog(this);//创建对话框
 	fd->resize(240, 320);    //设置显示的大小
 	fd->setNameFilter(filter); //设置文件过滤器
@@ -82,6 +85,8 @@ void TileCreator::slotopenfile()
 		list = fd->selectedFiles();      //返回文件列表的名称
 		resFile = list.at(0).toLocal8Bit().constData();          //取第一个文件名
 		ui.ledresfile->setText(resFile);
+#if 0 //每张影像在单独的文件下
+
 		if (ui.cmbTileflag->currentIndex() == 1)
 		{
 			int mark = resFile.lastIndexOf("/");
@@ -96,6 +101,40 @@ void TileCreator::slotopenfile()
 				QString absolute_file_path = fileifor.absoluteFilePath();
 				fileNameList.append(absolute_file_path);
 			}
+		}
+#elif 1//所有影响在同一个文件下
+		if (ui.cmbTileflag->currentIndex() == 1)
+		{
+
+			int mark1 = resFile.lastIndexOf("/");
+			resFile = resFile.left(mark1);
+			QDir dir(resFile);
+			//遍历文件
+			QFileInfoList file_list;
+			if (ui.cmbTileCreator->currentIndex() == 2)
+			{
+				file_list = dir.entryInfoList(shpfilters, QDir::Files | QDir::Hidden | QDir::NoSymLinks);
+			}
+			else
+			{
+				file_list = dir.entryInfoList(filters, QDir::Files | QDir::Hidden | QDir::NoSymLinks);
+			}
+			//遍历文件夹
+			//QFileInfoList folder_list = dir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
+
+			for (int i = 0; i != file_list.size(); i++)
+			{
+				QString name = file_list.at(i).absoluteFilePath();
+				fileNameList.append(name);
+			}
+		}
+#endif
+
+		//如果是矢量,则后缀名为。json
+		if (ui.cmbTileCreator->currentIndex() == 2)
+		{
+			std::string extension = "json";
+			ui.cmbext->setCurrentIndex(2);
 		}
 	}
 	else
@@ -180,7 +219,7 @@ int TileCreator::makeTMS()
 		{
 			basemap.url() = ui.ledresfile->text().toStdString();
 			map->addLayer(new ImageLayer(ImageLayerOptions("Tmsout", basemap)));
-		} 
+		}
 		else
 		{
 			for (int i = 0; i < fileNameList.count(); i++)
@@ -189,7 +228,7 @@ int TileCreator::makeTMS()
 				map->addLayer(new ImageLayer(ImageLayerOptions("Tmsout", basemap)));
 			}
 		}
-	} 
+	}
 	else
 	{
 		if (ui.cmbTileflag->currentIndex() == 0)
@@ -206,7 +245,7 @@ int TileCreator::makeTMS()
 			}
 		}
 	}
-	
+
 	osg::ref_ptr<MapNode> mapNode = new MapNode(map);
 
 	std::string index;
@@ -217,7 +256,7 @@ int TileCreator::makeTMS()
 	{
 		extension = "png";
 	}
-	else
+	else if (ui.cmbTileCreator->currentIndex() == 1)
 	{
 		extension = "tif";
 	}
@@ -391,7 +430,7 @@ int TileCreator::makeTMS()
 					outEarthFile);
 
 				ImageLayerOptions layerOptions(packager.getLayerName(), tms);
-				layerOptions.mergeConfig(layer->options().getConfig(true));
+				layerOptions.mergeConfig(layer->options().getConfig());
 				layerOptions.cachePolicy() = CachePolicy::NO_CACHE;
 
 				outMap->addLayer(new ImageLayer(layerOptions));
@@ -430,7 +469,7 @@ int TileCreator::makeTMS()
 					outEarthFile);
 
 				ElevationLayerOptions layerOptions(packager.getLayerName(), tms);
-				layerOptions.mergeConfig(layer->options().getConfig(true));
+				layerOptions.mergeConfig(layer->options().getConfig());
 				layerOptions.cachePolicy() = CachePolicy::NO_CACHE;
 
 				outMap->addLayer(new ElevationLayer(layerOptions));
@@ -441,11 +480,97 @@ int TileCreator::makeTMS()
 	return 0;
 }
 
+int TileCreator::makeTFS()
+{
+	//Read the min level
+	unsigned int minLevel = 0;
+
+	//Read the max level
+	unsigned int maxLevel;
+	if (ui.ledMaxlev->text().size() == 0)
+	{
+		int button = QMessageBox::information(this, QStringLiteral("警告"), QStringLiteral("瓦片最大级数未设置, 将根据程序自动计算，是否继续？"),
+			QMessageBox::StandardButton::Ok, QMessageBox::StandardButton::No);
+		if (button == 1024)
+		{
+			maxLevel = 5;
+		}
+		else
+		{
+			return 2;
+		}
+
+	}
+	else
+	{
+		maxLevel = ui.ledMaxlev->text().toInt();
+	}
+
+
+
+	// see if the user wants to override the type extension (imagery only)
+
+	// folder to which to write the TMS archive.
+	std::string rootFolder = ui.ledobjfile->text().toStdString();
+
+
+	// create a folder for the output
+	osgDB::makeDirectory(rootFolder);
+	if (!osgDB::fileExists(rootFolder))
+	{
+		QMessageBox::warning(this, QStringLiteral("警告"), QStringLiteral("路径不存在！"));
+		return 1;
+	}
+	//单个文件
+	int flag = -3;
+	if (ui.cmbTileflag->currentIndex() == 0)
+	{
+#ifdef _DEBUG
+		flag = QProcess::execute(QApplication::applicationDirPath() + "\\osgearth_tfsd", QStringList() << resFile << " "
+			<< "--max-level" << QString::number(maxLevel)<< " "
+			<< "--out" << objFile + "//TFS");
+#else
+		flag = QProcess::execute(QApplication::applicationDirPath() + "\\osgearth_tfs", QStringList() << resFile << " "
+			<< "--max-level" << QString::number(maxLevel) << " "
+			<< "--out" << objFile + "//TFS");
+#endif 
+	}
+	else
+	{
+		for (int i = 0; i < fileNameList.count(); i++)
+		{
+#ifdef _DEBUG
+			flag = QProcess::execute(QApplication::applicationDirPath() + "\\osgearth_tfsd", QStringList()  << fileNameList[i] << " "
+				<< "--max-level" << QString::number(maxLevel)<< " "
+				<< "--out" << objFile + "//TFS" + QString::number(i));
+#else
+			flag = QProcess::execute(QApplication::applicationDirPath() + "\\osgearth_tfs", QStringList() << fileNameList[i] << " "
+				<< "--max-level" << QString::number(maxLevel) << " "
+				<< "--out" << objFile + "//TFS" + QString::number(i));
+#endif 
+		}
+	}
+	if (flag == -1 || flag == -2)
+	{
+		return 1;
+	}
+	return 0;
+}
+
 void TileCreator::slotbeginceator()
 {
 	if (ui.ledresfile->text().size() > 0 && ui.ledobjfile->text().size() > 0)
 	{
-		int i = makeTMS();
+		int i = -3;
+		if (ui.cmbTileCreator->currentIndex() == 2)
+		{
+			i = makeTFS();
+		}
+		else
+		{
+			i = makeTMS();
+		}
+
 		if (i == 0)
 		{
 			QMessageBox::information(this, QStringLiteral("通知"), QStringLiteral("切片完成！"));
@@ -457,7 +582,7 @@ void TileCreator::slotbeginceator()
 	}
 	else if (ui.ledresfile->text().size() == 0)
 	{
-		QMessageBox::warning(this, QStringLiteral("警告"), QStringLiteral("请重新选择原始影像！"));
+		QMessageBox::warning(this, QStringLiteral("警告"), QStringLiteral("请重新选择原始数据！"));
 	}
 	else if (ui.ledobjfile->text().size() == 0)
 	{
