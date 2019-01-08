@@ -19,6 +19,7 @@ public slots:
 protected:
 	bool init();
 	int makeTMS();
+	int makeTFS();
 private:
 	Ui::TileCreatorClass ui;
 	QString resFile;

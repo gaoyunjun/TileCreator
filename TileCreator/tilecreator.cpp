@@ -1,7 +1,7 @@
 #include "tilecreator.h"
-#include <QMessageBox>
-#include <QFileDialog>
-#include <QDirIterator>
+#include <QtWidgets/QMessageBox>
+#include <QtWidgets/QFileDialog>
+#include <QtCore/QDirIterator>
 
 #include <osg/io_utils>
 #include <osgDB/FileNameUtils>
@@ -24,8 +24,8 @@
 #include <iostream>
 #include <sstream>
 #include <iterator>
-#include<QProcess>
-#include <QApplication>
+#include<QtCore/QProcess>
+#include <QtWidgets/QApplication>
 using namespace osgEarth;
 using namespace osgEarth::Util;
 using namespace osgEarth::Drivers;
@@ -205,6 +205,8 @@ int TileCreator::makeTMS()
 	unsigned int batchSize = 0;
 	// Read the concurrency level
 	unsigned int concurrency = 0;
+
+	concurrency = ui.spinBox->value();
 
 	bool applyAlphaMask = false;
 
