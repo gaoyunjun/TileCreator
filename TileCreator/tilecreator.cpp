@@ -26,6 +26,11 @@
 #include <iterator>
 #include<QtCore/QProcess>
 #include <QtWidgets/QApplication>
+#include  <gdal_alg_priv.h>
+#include <gdal_priv.h>
+#include <cpl_conv.h>
+#include <ogr_spatialref.h>
+
 using namespace osgEarth;
 using namespace osgEarth::Util;
 using namespace osgEarth::Drivers;
@@ -76,7 +81,7 @@ void TileCreator::slotopenfile()
 	shpfilters << QString("*.shp");
 	QFileDialog* fd = new QFileDialog(this);//创建对话框
 	fd->resize(240, 320);    //设置显示的大小
-	fd->setNameFilter(filter); //设置文件过滤器
+	fd->setNameFilters(filters); //设置文件过滤器
 	fd->setViewMode(QFileDialog::List);  //设置浏览模式，有 列表（list） 模式和 详细信息（detail）两种方式
 	if (fd->exec() == QDialog::Accepted)   //如果成功的执行
 	{
@@ -165,6 +170,9 @@ bool TileCreator::init()
 	resize(600, 500);
 	setWindowIcon(QIcon(QPixmap(":/TileCreator/Resources/images/TileCreator.png")));
 	ui.progressBar->hide();
+	//设置环境变量
+	std::string gdalPath = QCoreApplication::applicationDirPath().toStdString() + "/gdal_data";
+	CPLSetConfigOption("GDAL_DATA", gdalPath.c_str());
 	return true;
 }
 
@@ -213,21 +221,104 @@ int TileCreator::makeTMS()
 	bool writeXML = true;
 
 	// load up the map
-	osg::ref_ptr<Map>map = new Map;
+
+	MapOptions mapOpt;
+	//加载坐标息
+	std::string strProj4;
+
+	GDALAllRegister();
+	GDALDataset *poDataset;
+	std::string  fileName;
+	if (ui.cmbTileflag->currentIndex() == 0)
+	{
+		fileName =ui.ledresfile->text().toStdString();
+	}
+	else
+	{
+		fileName = (fileNameList[0]).toStdString();
+	}
+	if (fileName.empty())
+	{
+		QMessageBox::warning(this, QStringLiteral("警告"), QStringLiteral("读不到影像的坐标系！"));
+		return 0;
+	}
+	poDataset = (GDALDataset*)GDALOpen(fileName.c_str(), GA_ReadOnly);
+	const char* sProInfo = poDataset->GetProjectionRef();
+
+	int nLen = strlen(sProInfo);
+	char *pCh = new char[nLen + 1];
+	strcpy(pCh, sProInfo);
+	OGRSpatialReference  oSRS;
+	oSRS.importFromWkt(&pCh);
+	char*proj4;
+	oSRS.exportToProj4(&proj4);
+
+	strProj4 = proj4;
+	if (oSRS.IsProjected())
+	{
+		mapOpt.coordSysType() = MapOptions::CSTYPE_PROJECTED;
+	}
+	else if (oSRS.IsGeographic())
+	{
+		mapOpt.coordSysType() = MapOptions::CSTYPE_GEOCENTRIC;
+	}
+	GDALClose(poDataset);
+	//if (ui.prjcmb->currentIndex() == 0) //wgs84
+	//{
+	//	strProj4 = "+proj=longlat +datum=WGS84 +no_defs";
+	//	mapOpt.coordSysType() = MapOptions::CSTYPE_GEOCENTRIC;
+	//}
+	//else  if (ui.prjcmb->currentIndex() == 1) //web墨卡托
+	//{
+	//	strProj4 = "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs";
+	//	mapOpt.coordSysType() = MapOptions::CSTYPE_PROJECTED;
+	//}
+	//else //cgs2000
+	//{
+	//	strProj4 = "+proj=longlat +ellps=GRS80 +no_defs ";
+	//	
+	//}
+	ProfileOptions profileOpt;
+	profileOpt.srsString() = strProj4;
+
+	profileOpt.numTilesHighAtLod0() = 1;
+	profileOpt.numTilesWideAtLod0() = 1;
+	if (ui.xMinEdit->text() != "")
+	{
+		double xMin = ui.xMinEdit->text().toDouble();
+		double yMin = ui.yMinEdit->text().toDouble();
+		double xMax = ui.xMaxEdit->text().toDouble();
+		double yMax = ui.yMaxEdit->text().toDouble();
+		Bounds bounds;
+		bounds.set(xMin, yMin, xMax, yMax);
+		profileOpt.bounds() = bounds;
+	}
+	mapOpt.profile() = profileOpt;
+
+	osg::ref_ptr<Map>map = new Map(mapOpt);
 	GDALOptions basemap;
 	if (ui.cmbTileCreator->currentIndex() == 0)
 	{
 		if (ui.cmbTileflag->currentIndex() == 0)
 		{
-			basemap.url() = ui.ledresfile->text().toStdString();
-			map->addLayer(new ImageLayer(ImageLayerOptions("Tmsout", basemap)));
+			QString path = ui.ledresfile->text();
+			basemap.url() = path.toStdString();
+
+			QFileInfo fileInfo(path);
+			std::string sFileName = osgDB::getNameLessExtension(fileInfo.fileName().toStdString());
+			
+			map->addLayer(new ImageLayer(ImageLayerOptions(sFileName, basemap)));
 		}
 		else
 		{
 			for (int i = 0; i < fileNameList.count(); i++)
 			{
-				basemap.url() = fileNameList.at(i).toLocal8Bit().constData();
-				map->addLayer(new ImageLayer(ImageLayerOptions("Tmsout", basemap)));
+				QString path = fileNameList.at(i);
+				basemap.url() = path.toStdString();
+
+				QFileInfo fileInfo(path);
+				std::string sFileName = osgDB::getNameLessExtension(fileInfo.fileName().toStdString());
+				map->addLayer(new ImageLayer(ImageLayerOptions(sFileName, basemap)));
 			}
 		}
 	}
@@ -235,20 +326,29 @@ int TileCreator::makeTMS()
 	{
 		if (ui.cmbTileflag->currentIndex() == 0)
 		{
-			basemap.url() = ui.ledresfile->text().toStdString();
-			map->addLayer(new ElevationLayer(ElevationLayerOptions("Tmsout", basemap)));
+			QString path = ui.ledresfile->text();
+			basemap.url() = path.toStdString();
+
+			QFileInfo fileInfo(path);
+			std::string sFileName = osgDB::getNameLessExtension(fileInfo.fileName().toStdString());
+
+			map->addLayer(new ElevationLayer(ElevationLayerOptions(sFileName, basemap)));
 		}
 		else
 		{
 			for (int i = 0; i < fileNameList.count(); i++)
 			{
-				basemap.url() = fileNameList.at(i).toLocal8Bit().constData();
+				QString path = fileNameList.at(i);
+				basemap.url() = path.toStdString();
+
+				QFileInfo fileInfo(path);
+				std::string sFileName = osgDB::getNameLessExtension(fileInfo.fileName().toStdString());
 				map->addLayer(new ElevationLayer(ElevationLayerOptions("Tmsout", basemap)));
 			}
 		}
 	}
 
-	osg::ref_ptr<MapNode> mapNode = new MapNode(map);
+
 
 	std::string index;
 
@@ -529,7 +629,7 @@ int TileCreator::makeTFS()
 	{
 #ifdef _DEBUG
 		flag = QProcess::execute(QApplication::applicationDirPath() + "\\osgearth_tfsd", QStringList() << resFile << " "
-			<< "--max-level" << QString::number(maxLevel)<< " "
+			<< "--max-level" << QString::number(maxLevel) << " "
 			<< "--out" << objFile + "//TFS");
 #else
 		flag = QProcess::execute(QApplication::applicationDirPath() + "\\osgearth_tfs", QStringList() << resFile << " "
@@ -542,8 +642,8 @@ int TileCreator::makeTFS()
 		for (int i = 0; i < fileNameList.count(); i++)
 		{
 #ifdef _DEBUG
-			flag = QProcess::execute(QApplication::applicationDirPath() + "\\osgearth_tfsd", QStringList()  << fileNameList[i] << " "
-				<< "--max-level" << QString::number(maxLevel)<< " "
+			flag = QProcess::execute(QApplication::applicationDirPath() + "\\osgearth_tfsd", QStringList() << fileNameList[i] << " "
+				<< "--max-level" << QString::number(maxLevel) << " "
 				<< "--out" << objFile + "//TFS" + QString::number(i));
 #else
 			flag = QProcess::execute(QApplication::applicationDirPath() + "\\osgearth_tfs", QStringList() << fileNameList[i] << " "

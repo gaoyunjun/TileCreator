@@ -6,16 +6,16 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>974</width>
-    <height>826</height>
+    <width>560</width>
+    <height>701</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>TileCreator</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="0">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
        <widget class="QComboBox" name="cmbTileCreator">
@@ -52,7 +52,7 @@
       </item>
      </layout>
     </item>
-    <item row="1" column="0">
+    <item>
      <layout class="QHBoxLayout" name="horizontalLayout_2">
       <item>
        <widget class="QPushButton" name="ptnres">
@@ -66,7 +66,56 @@
       </item>
      </layout>
     </item>
-    <item row="2" column="0">
+    <item>
+     <widget class="QGroupBox" name="groupBox">
+      <property name="title">
+       <string>范围(投影坐标系需要范围)：</string>
+      </property>
+      <layout class="QGridLayout" name="gridLayout">
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_4">
+         <property name="text">
+          <string>xMin:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLineEdit" name="xMinEdit"/>
+       </item>
+       <item row="0" column="2" colspan="2">
+        <widget class="QLabel" name="label_5">
+         <property name="text">
+          <string>xMax:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="4">
+        <widget class="QLineEdit" name="xMaxEdit"/>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_6">
+         <property name="text">
+          <string>yMin:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="yMinEdit"/>
+       </item>
+       <item row="1" column="2">
+        <widget class="QLabel" name="label_7">
+         <property name="text">
+          <string>yMax:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="3" colspan="2">
+        <widget class="QLineEdit" name="yMaxEdit"/>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
      <layout class="QHBoxLayout" name="horizontalLayout_3">
       <item>
        <widget class="QLabel" name="label_2">
@@ -97,7 +146,7 @@
       </item>
      </layout>
     </item>
-    <item row="3" column="0">
+    <item>
      <layout class="QHBoxLayout" name="horizontalLayout_4">
       <item>
        <widget class="QPushButton" name="ptnobj_2">
@@ -141,7 +190,7 @@
       </item>
      </layout>
     </item>
-    <item row="4" column="0">
+    <item>
      <layout class="QHBoxLayout" name="horizontalLayout_5">
       <item>
        <widget class="QPushButton" name="ptnobj">
@@ -155,7 +204,7 @@
       </item>
      </layout>
     </item>
-    <item row="5" column="0">
+    <item>
      <layout class="QHBoxLayout" name="horizontalLayout_6">
       <item>
        <widget class="QPushButton" name="ptnbegin">
@@ -179,7 +228,7 @@
       </item>
      </layout>
     </item>
-    <item row="6" column="0">
+    <item>
      <widget class="QProgressBar" name="progressBar">
       <property name="value">
        <number>24</number>
@@ -193,7 +242,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>974</width>
+     <width>560</width>
      <height>26</height>
     </rect>
    </property>
